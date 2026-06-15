@@ -1,0 +1,58 @@
+# ==========================================
+# Python & Environments
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv/
+venv/
+env/
+archive/
+
+# ==========================================
+# Datasets & Heavy Data
+# ==========================================
+# Ignores all heavy datasets and archives in the data/ folder
+data/classification_dataset/test/
+data/classification_dataset/train/
+data/classification_dataset/val/
+data/classification_dataset.zip
+data/luna16_yolo_dataset_v4/images/
+data/luna16_yolo_dataset_v4/labels/
+data/luna16_yolo_dataset_v4.rar
+data/diagnostic_visualizations/
+
+# ==========================================
+# Machine Learning Models & Weights
+# ==========================================
+*.pt
+*.pth
+*.onnx
+
+# ==========================================
+# MLflow Tracking
+# ==========================================
+mlruns/
+*.db
+# (Specifically ignoring the local SQLite DBs)
+02_Model_Development/ml_model_engineering/mlflow.db
+02_Model_Development/ml_model_engineering/mlflow_unified.db
+
+# ==========================================
+# Frontend (React/Node)
+# ==========================================
+node_modules/
+dist/
+build/
+03_Model_Operations/deployment/frontend/node_modules/
+
+# ==========================================
+# IDEs & OS Files
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

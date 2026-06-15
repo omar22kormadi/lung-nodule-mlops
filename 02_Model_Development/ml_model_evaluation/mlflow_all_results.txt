@@ -1,0 +1,1614 @@
+====================================================================================================
+MLFLOW EXPERIMENT RESULTS - COMPLETE SUMMARY
+Generated: 2026-04-29 12:23:38
+Total Runs: 32
+Sorted: Best to Worst (by validation accuracy/mAP50)
+====================================================================================================
+
+
+====================================================================================================
+RANK #1 (Score: 0.8235)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: b263ef45e33f4648a3d81e5a12459360
+Status: FINISHED
+Start Time: 2026-04-07 15:13:38
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.8563
+  train_auc: 0.9105
+  train_f1: 0.7613
+  train_loss: 0.8036
+  val_accuracy: 0.8235
+  val_auc: 0.8094
+  val_f1: 0.6792
+  val_loss: 1.2776
+
+
+====================================================================================================
+RANK #2 (Score: 0.8201)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 8aae0efa72704b4385a34385ab7d287b
+Status: FINISHED
+Start Time: 2026-04-07 15:37:18
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 0.0001
+
+--- METRICS ---
+  train_accuracy: 0.9375
+  train_auc: 0.9767
+  train_f1: 0.9028
+  train_loss: 0.4538
+  val_accuracy: 0.8201
+  val_auc: 0.8357
+  val_f1: 0.6867
+  val_loss: 1.3561
+
+
+====================================================================================================
+RANK #3 (Score: 0.7993)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: c21833a5eb034c1280cf40bb752918b3
+Status: FINISHED
+Start Time: 2026-04-07 17:32:13
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 0.0001
+
+--- METRICS ---
+  best_val_accuracy: 0.8131
+  best_val_auc: 0.8739
+  best_val_loss: 1.1199
+  train_accuracy: 0.9303
+  train_auc: 0.9796
+  train_f1: 0.8958
+  train_loss: 0.5227
+  val_accuracy: 0.7993
+  val_auc: 0.8469
+  val_f1: 0.6813
+  val_loss: 1.4275
+
+
+====================================================================================================
+RANK #4 (Score: 0.7993)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 92e7d503cae04e23ae0cc9aab12bf8ff
+Status: FINISHED
+Start Time: 2026-04-07 16:52:24
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.5
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 0.0002
+
+--- METRICS ---
+  best_val_accuracy: 0.7647
+  best_val_auc: 0.7990
+  best_val_loss: 1.3830
+  train_accuracy: 0.8858
+  train_auc: 0.9489
+  train_f1: 0.8175
+  train_loss: 1.0257
+  val_accuracy: 0.7993
+  val_auc: 0.7893
+  val_f1: 0.6133
+  val_loss: 1.5109
+
+
+====================================================================================================
+RANK #5 (Score: 0.7857)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: a84df19522fc40af9bf2b86ad5c9fc8d
+Status: FINISHED
+Start Time: 2026-04-15 11:44:15
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 60
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  task_weight_malignancy_w: 8.0076
+  task_weight_margin_w: 4.7387
+  task_weight_spiculation_w: 5.6607
+  train_loss: -2.8045
+  val_accuracy: 0.7857
+  val_auc: 0.8700
+  val_f1: 0.7313
+  val_loss: -2.2908
+  val_mar_f1: 0.8625
+  val_sensitivity: 0.7313
+  val_specificity: 0.8218
+  val_spi_f1: 0.4643
+
+
+====================================================================================================
+RANK #6 (Score: 0.7810)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 4447cf3b193f478db879d74820045be4
+Status: FINISHED
+Start Time: 2026-04-06 22:08:25
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.7782
+  train_auc: 0.8166
+  train_f1: 0.6687
+  train_loss: 1.0842
+  val_accuracy: 0.7810
+  val_auc: 0.8260
+  val_f1: 0.6933
+  val_loss: 2.2212
+
+
+====================================================================================================
+RANK #7 (Score: 0.7564)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: f508fff211e24c62bdbc9aed2c1d4b64
+Status: FINISHED
+Start Time: 2026-04-15 13:23:21
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 60
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  best_val_accuracy: 0.7778
+  best_val_f1: 0.7011
+  task_weight_malignancy_w: 7.3891
+  task_weight_margin_w: 5.2798
+  task_weight_spiculation_w: 5.7931
+  train_loss: -2.1588
+  val_accuracy: 0.7564
+  val_auc: 0.8775
+  val_f1: 0.7016
+  val_loss: -1.8996
+  val_mar_f1: 0.8242
+  val_sensitivity: 0.8701
+  val_specificity: 0.7006
+  val_spi_f1: 0.4651
+
+
+====================================================================================================
+RANK #8 (Score: 0.7543)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 5ce923384a1b40b2ab88d9daa07f1a84
+Status: FINISHED
+Start Time: 2026-04-07 14:39:29
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.7529
+  train_auc: 0.7645
+  train_f1: 0.5376
+  train_loss: 1.1730
+  val_accuracy: 0.7543
+  val_auc: 0.7289
+  val_f1: 0.4741
+  val_loss: 1.6736
+
+
+====================================================================================================
+RANK #9 (Score: 0.7439)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: ab0dd5588c4d4e00b693ef173a33b9e6
+Status: FINISHED
+Start Time: 2026-04-07 14:50:41
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 16
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.8398
+  train_auc: 0.9176
+  train_f1: 0.7310
+  train_loss: 0.7788
+  val_accuracy: 0.7439
+  val_auc: 0.7021
+  val_f1: 0.4478
+  val_loss: 1.5400
+
+
+====================================================================================================
+RANK #10 (Score: 0.7048)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: c0e9e3bca11147fdba1c0f2dc134a087
+Status: FINISHED
+Start Time: 2026-04-06 21:20:46
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.7641
+  train_auc: 0.7803
+  train_f1: 0.6355
+  train_loss: 1.1963
+  val_accuracy: 0.7048
+  val_auc: 0.7760
+  val_f1: 0.5867
+  val_loss: 305.4310
+
+
+====================================================================================================
+RANK #11 (Score: 0.6955)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 44f2fc38a0eb476cb8b9aa917d98c813
+Status: FINISHED
+Start Time: 2026-04-07 21:24:45
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 0.0001
+
+--- METRICS ---
+  best_val_accuracy: 0.5190
+  best_val_auc: 0.6954
+  best_val_loss: 0.8178
+  train_accuracy: 0.6818
+  train_auc: 0.8571
+  train_f1: 0.6492
+  train_loss: 0.7117
+  val_accuracy: 0.6955
+  val_auc: 0.7875
+  val_f1: 0.5888
+  val_loss: 0.8457
+
+
+====================================================================================================
+RANK #12 (Score: 0.6574)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 7ce1a51ea51042559a33d5918ce16bb6
+Status: FINISHED
+Start Time: 2026-04-15 14:26:16
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 0.0001
+
+--- METRICS ---
+  best_val_accuracy: 0.7266
+  best_val_auc: 0.8564
+  best_val_loss: 0.7636
+  train_accuracy: 0.7687
+  train_auc: 0.9100
+  train_f1: 0.7262
+  train_loss: 0.5615
+  val_accuracy: 0.6574
+  val_auc: 0.8525
+  val_f1: 0.6148
+  val_loss: 0.9566
+
+
+====================================================================================================
+RANK #13 (Score: 0.5557)
+====================================================================================================
+
+Experiment: yolo_runs
+Run ID: 7a2209afd6804d069e43d24d2bc68d46
+Status: RUNNING
+Start Time: 2026-04-20 19:12:40
+
+--- PARAMETERS ---
+  (No parameters logged)
+
+--- METRICS ---
+  final_fitness: 0.3255
+  final_metrics_mAP50-95_B: 0.2999
+  final_metrics_mAP50_B: 0.5557
+  final_metrics_precision_B: 0.6234
+  final_metrics_recall_B: 0.5661
+
+
+====================================================================================================
+RANK #14 (Score: 0.5476)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: 19b1f75895044dd4b8545f3b574f3cf2
+Status: FINISHED
+Start Time: 2026-04-15 11:41:23
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 1
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  task_weight_malignancy_w: 1.0455
+  task_weight_margin_w: 1.0394
+  task_weight_spiculation_w: 1.0374
+  train_loss: 0.9859
+  val_accuracy: 0.5476
+  val_auc: 0.5796
+  val_f1: 0.5190
+  val_loss: 1.8117
+  val_mar_f1: 0.4478
+  val_sensitivity: 0.6119
+  val_specificity: 0.5050
+  val_spi_f1: 0.0938
+
+
+====================================================================================================
+RANK #15 (Score: 0.5245)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: dd85aa51761e4a43b9febb8373092eba
+Status: FINISHED
+Start Time: 2026-03-16 12:59:26
+
+--- PARAMETERS ---
+  batch_size: 8
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.5142
+  train_auc: 0.4992
+  train_f1: 0.4488
+  train_loss: 1.5226
+  val_accuracy: 0.5245
+  val_auc: 0.5433
+  val_f1: 0.3333
+  val_loss: 1.4644
+
+
+====================================================================================================
+RANK #16 (Score: 0.3889)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: c34d5367ca714d46b04bb623e4e4ea15
+Status: FINISHED
+Start Time: 2026-04-15 13:18:34
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 1
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  best_val_accuracy: 0.3889
+  best_val_f1: 0.4723
+  task_weight_malignancy_w: 1.0624
+  task_weight_margin_w: 1.0439
+  task_weight_spiculation_w: 1.0518
+  train_loss: 0.9816
+  val_accuracy: 0.3889
+  val_auc: 0.4512
+  val_f1: 0.4723
+  val_loss: 0.6897
+  val_mar_f1: 0.2996
+  val_sensitivity: 0.8312
+  val_specificity: 0.1720
+  val_spi_f1: 0.1967
+
+
+====================================================================================================
+RANK #17 (Score: 0.3706)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: e070586900704155a5b319584fbbe24e
+Status: FINISHED
+Start Time: 2026-04-06 17:59:06
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 8
+  classification_type: 3-class
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  train_accuracy: 0.5301
+  train_auc: 0.6657
+  train_f1: 0.3930
+  train_loss: 1.6939
+  val_accuracy: 0.3706
+  val_auc: 0.5250
+  val_f1: 0.2649
+  val_loss: 1.8220
+
+
+====================================================================================================
+RANK #18 (Score: 0.2941)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: 6925fece1f6d42839d88f131074b35a9
+Status: FINISHED
+Start Time: 2026-04-15 11:03:43
+
+--- PARAMETERS ---
+  batch_size: 4
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 1
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  task_weight_malignancy_w: 1.1677
+  task_weight_margin_w: 1.1422
+  task_weight_spiculation_w: 1.1180
+  train_loss: 0.8034
+  val_accuracy: 0.2941
+  val_auc: 0.4877
+  val_f1: 0.4545
+  val_loss: 0.5463
+  val_mar_f1: 0.0079
+  val_sensitivity: 1.0000
+  val_specificity: 0.0000
+  val_spi_f1: 0.1522
+
+
+====================================================================================================
+RANK #19 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: d56609bf87e44fc0b6581462b6afa53e
+Status: FINISHED
+Start Time: 2026-04-20 16:14:23
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 16
+  batch_size: 16
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.2
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 25.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 200
+  erasing: 0.0
+  exist_ok: True
+  final_epochs: 200
+  final_patience: 60
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.00017351689635337146
+  lrf: 0.023115181051857215
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.25
+  multi_scale: False
+  name: lung_nodule_detector
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 60
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: yolo_runs
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: yolo_runs/lung_nodule_detector
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.1
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: True
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 5
+  warmup_momentum: 0.8
+  weight_decay: 0.0010417190563755889
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0001
+  lr/pg1: 0.0001
+  lr/pg2: 0.0001
+  metrics/mAP50-95B: 0.2999
+  metrics/mAP50B: 0.5557
+  metrics/precisionB: 0.6234
+  metrics/recallB: 0.5661
+  train/box_loss: 0.8298
+  train/cls_loss: 0.4620
+  train/dfl_loss: 0.8544
+  val/box_loss: 1.8712
+  val/cls_loss: 2.0473
+  val/dfl_loss: 1.2094
+
+
+====================================================================================================
+RANK #20 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 4827a3097d234a889ceb9a12ff6e967f
+Status: FINISHED
+Start Time: 2026-04-20 16:14:23
+
+--- PARAMETERS ---
+  batch_size: 16
+  copy_paste: 0.2
+  degrees: 25.0
+  erasing: 0.0
+  lr0: 0.00017351689635337146
+  lrf: 0.023115181051857215
+  mosaic: 0.25
+  scale: 0.1
+  warmup_epochs: 5
+  weight_decay: 0.0010417190563755889
+
+--- METRICS ---
+  best_trial_map50: 0.5867
+  n_trials: 5.0000
+
+
+====================================================================================================
+RANK #21 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 44b413128f444174935b1201491c9529
+Status: FINISHED
+Start Time: 2026-04-20 15:43:37
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 48
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.2
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 15.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 15
+  erasing: 0.3
+  exist_ok: True
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.006757557851599777
+  lrf: 0.005242549350913727
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.5
+  multi_scale: False
+  name: trial_3
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 10
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: optuna_yolo_trials
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: optuna_yolo_trials/trial_3
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.30000000000000004
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: False
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 8
+  warmup_momentum: 0.8
+  weight_decay: 0.0007099418245139564
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0002
+  lr/pg1: 0.0002
+  lr/pg2: 0.0002
+  metrics/mAP50-95B: 0.2767
+  metrics/mAP50B: 0.5385
+  metrics/precisionB: 0.6137
+  metrics/recallB: 0.5121
+  train/box_loss: 1.6950
+  train/cls_loss: 1.5249
+  train/dfl_loss: 1.1255
+  val/box_loss: 1.8124
+  val/cls_loss: 1.6103
+  val/dfl_loss: 1.0933
+
+
+====================================================================================================
+RANK #22 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 7cdfdc5f3dee46d2bb74234c28339a11
+Status: FINISHED
+Start Time: 2026-04-20 15:11:04
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 16
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.2
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 25.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 15
+  erasing: 0.1
+  exist_ok: True
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.001330375546868357
+  lrf: 0.017342503109761584
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.0
+  multi_scale: False
+  name: trial_2
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 10
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: optuna_yolo_trials
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: optuna_yolo_trials/trial_2
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.2
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: False
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 3
+  warmup_momentum: 0.8
+  weight_decay: 0.00015250319379691015
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0000
+  lr/pg1: 0.0000
+  lr/pg2: 0.0000
+  metrics/mAP50-95B: 0.2186
+  metrics/mAP50B: 0.5247
+  metrics/precisionB: 0.6221
+  metrics/recallB: 0.4881
+  train/box_loss: 1.6252
+  train/cls_loss: 1.5537
+  train/dfl_loss: 1.1129
+  val/box_loss: 2.1665
+  val/cls_loss: 1.8009
+  val/dfl_loss: 1.1663
+
+
+====================================================================================================
+RANK #23 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 11917f05a7234ab9a656a891c8926113
+Status: FINISHED
+Start Time: 2026-04-20 14:38:13
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 16
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.0
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 5.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 15
+  erasing: 0.0
+  exist_ok: True
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.0004767530534702735
+  lrf: 0.015389513292098533
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.25
+  multi_scale: False
+  name: trial_1
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 10
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: optuna_yolo_trials
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: optuna_yolo_trials/trial_1
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.1
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: False
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 5
+  warmup_momentum: 0.8
+  weight_decay: 0.00010611121474755325
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0000
+  lr/pg1: 0.0000
+  lr/pg2: 0.0000
+  metrics/mAP50-95B: 0.2956
+  metrics/mAP50B: 0.5607
+  metrics/precisionB: 0.6526
+  metrics/recallB: 0.5298
+  train/box_loss: 1.4678
+  train/cls_loss: 1.0953
+  train/dfl_loss: 1.0358
+  val/box_loss: 1.7484
+  val/cls_loss: 1.5950
+  val/dfl_loss: 1.0977
+
+
+====================================================================================================
+RANK #24 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 6bb51120b8884019a19d4a7a016980c6
+Status: FINISHED
+Start Time: 2026-04-20 13:44:29
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 32
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.0
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 10.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 30
+  erasing: 0.0
+  exist_ok: True
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.0005563540604281903
+  lrf: 0.007489375438454359
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.25
+  multi_scale: False
+  name: trial_1
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 10
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: optuna_yolo_trials
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: optuna_yolo_trials/trial_1
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.5
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: False
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 5
+  warmup_momentum: 0.8
+  weight_decay: 0.0004582161136975976
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0000
+  lr/pg1: 0.0000
+  lr/pg2: 0.0000
+  metrics/mAP50-95B: 0.2976
+  metrics/mAP50B: 0.5824
+  metrics/precisionB: 0.6213
+  metrics/recallB: 0.5767
+  train/box_loss: 1.4290
+  train/cls_loss: 1.0699
+  train/dfl_loss: 1.0622
+  val/box_loss: 1.7858
+  val/cls_loss: 1.5411
+  val/dfl_loss: 1.0971
+
+
+====================================================================================================
+RANK #25 (Score: 0.0000)
+====================================================================================================
+
+Experiment: optuna_yolo_trials
+Run ID: 5e4c7bc5c6db4c6bbe8243ea8f47daed
+Status: FINISHED
+Start Time: 2026-04-20 12:47:31
+
+--- PARAMETERS ---
+  agnostic_nms: False
+  amp: False
+  augment: False
+  auto_augment: randaugment
+  batch: 16
+  bgr: 0.0
+  box: 7.5
+  cache: False
+  cfg: None
+  classes: None
+  close_mosaic: 10
+  cls: 0.5
+  conf: None
+  copy_paste: 0.0
+  cos_lr: True
+  crop_fraction: 1.0
+  data: /kaggle/working/dataset.yaml
+  degrees: 10.0
+  deterministic: True
+  device: 0
+  dfl: 1.5
+  dnn: False
+  dropout: 0.0
+  dynamic: False
+  embed: None
+  epochs: 30
+  erasing: 0.3
+  exist_ok: True
+  fliplr: 0.5
+  flipud: 0.5
+  format: torchscript
+  fraction: 1.0
+  freeze: None
+  half: False
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  imgsz: 640
+  int8: False
+  iou: 0.7
+  keras: False
+  kobj: 1.0
+  label_smoothing: 0.0
+  line_width: None
+  lr0: 0.006524444737507806
+  lrf: 0.00585040654048071
+  mask_ratio: 4
+  max_det: 300
+  mixup: 0.0
+  mode: train
+  model: /kaggle/input/datasets/amorelkormadi/yolo-weight/yolov8x.pt
+  momentum: 0.937
+  mosaic: 0.5
+  multi_scale: False
+  name: trial_0
+  nbs: 64
+  nms: False
+  opset: None
+  optimize: False
+  optimizer: AdamW
+  overlap_mask: True
+  patience: 10
+  perspective: 0.0
+  plots: True
+  pose: 12.0
+  pretrained: True
+  profile: False
+  project: optuna_yolo_trials
+  rect: False
+  resume: False
+  retina_masks: False
+  save: True
+  save_conf: False
+  save_crop: False
+  save_dir: optuna_yolo_trials/trial_0
+  save_frames: False
+  save_hybrid: False
+  save_json: False
+  save_period: -1
+  save_txt: False
+  scale: 0.2
+  seed: 0
+  shear: 0.0
+  show: False
+  show_boxes: True
+  show_conf: True
+  show_labels: True
+  simplify: False
+  single_cls: False
+  source: None
+  split: val
+  stream_buffer: False
+  task: detect
+  time: None
+  tracker: botsort.yaml
+  translate: 0.1
+  val: True
+  verbose: False
+  vid_stride: 1
+  visualize: False
+  warmup_bias_lr: 0.1
+  warmup_epochs: 3
+  warmup_momentum: 0.8
+  weight_decay: 0.0001766206256797819
+  workers: 8
+  workspace: 4
+
+--- METRICS ---
+  lr/pg0: 0.0001
+  lr/pg1: 0.0001
+  lr/pg2: 0.0001
+  metrics/mAP50-95B: 0.2736
+  metrics/mAP50B: 0.5357
+  metrics/precisionB: 0.6402
+  metrics/recallB: 0.5162
+  train/box_loss: 1.5843
+  train/cls_loss: 1.3166
+  train/dfl_loss: 1.0872
+  val/box_loss: 1.8830
+  val/cls_loss: 1.6553
+  val/dfl_loss: 1.1096
+
+
+====================================================================================================
+RANK #26 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Detection v2 - Lightweight
+Run ID: a7e6d997acf44b53be05139493688431
+Status: FAILED
+Start Time: 2026-04-16 00:38:58
+
+--- PARAMETERS ---
+  batch_size: 4
+  dice_threshold: 0.5
+  epochs: 50
+  input_size: 64
+  lr: 0.0002
+  weight_decay: 1e-05
+
+--- METRICS ---
+  best_val_dice: 0.3428
+  train_dice: 0.3929
+  train_loss: 0.9601
+  val_dice: 0.2747
+  val_loss: 0.9547
+
+
+====================================================================================================
+RANK #27 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Detection v1
+Run ID: fcd6ca736da042eeb37dd2023944f576
+Status: FAILED
+Start Time: 2026-04-15 18:15:33
+
+--- PARAMETERS ---
+  batch_size: 2
+  dice_threshold: 0.5
+  epochs: 80
+  gradient_accumulation: 4
+  input_size: 96
+  lr: 0.0001
+  weight_decay: 1e-05
+
+--- METRICS ---
+  best_val_dice: 0.0019
+  train_dice: 0.0023
+  train_loss: 1.3294
+  val_dice: 0.0019
+  val_loss: 1.2367
+
+
+====================================================================================================
+RANK #28 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Detection v1
+Run ID: 4d22029c9c704d5eab85b597a7bd42df
+Status: FAILED
+Start Time: 2026-04-15 18:12:45
+
+--- PARAMETERS ---
+  batch_size: 4
+  dice_threshold: 0.5
+  epochs: 80
+  input_size: 128
+  lr: 0.0001
+  weight_decay: 1e-05
+
+--- METRICS ---
+  (No metrics logged)
+
+
+====================================================================================================
+RANK #29 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Classification v2
+Run ID: 4e8f0cde2fbe41d4b0596e90bf1b5ee7
+Status: FAILED
+Start Time: 2026-04-15 11:02:41
+
+--- PARAMETERS ---
+  batch_size: 4
+  classification_type: binary
+  dropout_rate: 0.4
+  epochs: 1
+  focal_gamma: 2.0
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  lr_backbone: 5e-05
+  lr_heads: 0.0003
+  mixup_alpha: 0.2
+  weight_decay: 0.0001
+
+--- METRICS ---
+  (No metrics logged)
+
+
+====================================================================================================
+RANK #30 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: 81553c1f6150478e9e77cc62a1f3615d
+Status: FAILED
+Start Time: 2026-04-07 15:10:27
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  (No metrics logged)
+
+
+====================================================================================================
+RANK #31 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: c248511157154ad9a17509168b93a618
+Status: FAILED
+Start Time: 2026-04-07 15:09:00
+
+--- PARAMETERS ---
+  batch_size: 8
+  classification_type: binary
+  dropout_rate: 0.3
+  epochs: 60
+  learning_rate: 0.0001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  (No metrics logged)
+
+
+====================================================================================================
+RANK #32 (Score: 0.0000)
+====================================================================================================
+
+Experiment: Lung Nodule Multi-Output Classification
+Run ID: c83f273ee00d4eb194646471a7927190
+Status: FAILED
+Start Time: 2026-04-06 17:57:18
+
+--- PARAMETERS ---
+  backbone: resnet50
+  batch_size: 8
+  classification_type: 3-class
+  dropout_rate: 0.3
+  epochs: 10
+  learning_rate: 0.001
+  pretrained: True
+  weight_decay: 1e-05
+
+--- METRICS ---
+  (No metrics logged)
+
+
+====================================================================================================
+SUMMARY TABLE - ALL RUNS
+====================================================================================================
+
+Rank  Experiment                                    Run ID     Val Acc/mAP  AUC        F1        
+----- --------------------------------------------- ---------- ------------ ---------- ----------
+1     Lung Nodule Multi-Output Classification       b263ef45   0.8235       0.8094     0.6792    
+2     Lung Nodule Multi-Output Classification       8aae0efa   0.8201       0.8357     0.6867    
+3     Lung Nodule Multi-Output Classification       c21833a5   0.7993       0.8469     0.6813    
+4     Lung Nodule Multi-Output Classification       92e7d503   0.7993       0.7893     0.6133    
+5     Lung Nodule Classification v2                 a84df195   0.7857       0.8700     0.7313    
+6     Lung Nodule Multi-Output Classification       4447cf3b   0.7810       0.8260     0.6933    
+7     Lung Nodule Classification v2                 f508fff2   0.7564       0.8775     0.7016    
+8     Lung Nodule Multi-Output Classification       5ce92338   0.7543       0.7289     0.4741    
+9     Lung Nodule Multi-Output Classification       ab0dd558   0.7439       0.7021     0.4478    
+10    Lung Nodule Multi-Output Classification       c0e9e3bc   0.7048       0.7760     0.5867    
+11    Lung Nodule Multi-Output Classification       44f2fc38   0.6955       0.7875     0.5888    
+12    Lung Nodule Multi-Output Classification       7ce1a51e   0.6574       0.8525     0.6148    
+13    yolo_runs                                     7a2209af   0.5557       0.0000     0.0000    
+14    Lung Nodule Classification v2                 19b1f758   0.5476       0.5796     0.5190    
+15    Lung Nodule Multi-Output Classification       dd85aa51   0.5245       0.5433     0.3333    
+16    Lung Nodule Classification v2                 c34d5367   0.3889       0.4512     0.4723    
+17    Lung Nodule Multi-Output Classification       e0705869   0.3706       0.5250     0.2649    
+18    Lung Nodule Classification v2                 6925fece   0.2941       0.4877     0.4545    
+19    optuna_yolo_trials                            d56609bf   0.0000       0.0000     0.0000    
+20    optuna_yolo_trials                            4827a309   0.0000       0.0000     0.0000    
+21    optuna_yolo_trials                            44b41312   0.0000       0.0000     0.0000    
+22    optuna_yolo_trials                            7cdfdc5f   0.0000       0.0000     0.0000    
+23    optuna_yolo_trials                            11917f05   0.0000       0.0000     0.0000    
+24    optuna_yolo_trials                            6bb51120   0.0000       0.0000     0.0000    
+25    optuna_yolo_trials                            5e4c7bc5   0.0000       0.0000     0.0000    
+26    Lung Nodule Detection v2 - Lightweight        a7e6d997   0.0000       0.0000     0.0000    
+27    Lung Nodule Detection v1                      fcd6ca73   0.0000       0.0000     0.0000    
+28    Lung Nodule Detection v1                      4d22029c   0.0000       0.0000     0.0000    
+29    Lung Nodule Classification v2                 4e8f0cde   0.0000       0.0000     0.0000    
+30    Lung Nodule Multi-Output Classification       81553c1f   0.0000       0.0000     0.0000    
+31    Lung Nodule Multi-Output Classification       c2485111   0.0000       0.0000     0.0000    
+32    Lung Nodule Multi-Output Classification       c83f273e   0.0000       0.0000     0.0000    
+
+====================================================================================================
+END OF REPORT
+====================================================================================================

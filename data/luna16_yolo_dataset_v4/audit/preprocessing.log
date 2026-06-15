@@ -1,0 +1,14 @@
+2026-05-20 15:40:51,467 | INFO     | ================================================================================
+2026-05-20 15:40:51,467 | INFO     | LUNA16 Preprocessing v2 — START
+2026-05-20 15:40:51,467 | INFO     | Output: C:\Users\amork\Desktop\data\manifest-1600709154662\CRISP-ML(Q)\data\luna16_yolo_dataset_v4
+2026-05-20 15:40:51,467 | INFO     | Window: lung_default center=-600.0 width=1500.0
+2026-05-20 15:40:51,467 | INFO     | 2.5D Stacking: ENABLED (gap=2 slices)
+2026-05-20 15:40:53,447 | INFO     | Loaded 1186 annotations, 601 scans
+2026-05-20 15:40:53,449 | INFO     | Patient assignment: train=420 val=90 test=91 (total 601)
+2026-05-20 15:40:53,450 | INFO     | Leakage verification PASSED
+2026-05-20 15:40:53,454 | INFO     | Streaming export enabled — each scan written to images/labels immediately
+2026-05-20 17:48:04,304 | INFO     | Wrote C:\Users\amork\Desktop\data\manifest-1600709154662\CRISP-ML(Q)\data\luna16_yolo_dataset_v4\audit\V1_VS_V2_COMPARISON.md
+2026-05-20 17:48:07,351 | INFO     | Total slices on disk: 7680
+2026-05-20 17:48:12,898 | INFO     | Export QA PASSED
+2026-05-20 17:48:16,376 | INFO     | ================================================================================
+2026-05-20 17:48:16,376 | INFO     | PIPELINE v2 COMPLETE — 7680 slices saved under C:\Users\amork\Desktop\data\manifest-1600709154662\CRISP-ML(Q)\data\luna16_yolo_dataset_v4
