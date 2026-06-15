@@ -1,0 +1,5 @@
+outs:
+- md5: 4028670e380c8de70f165bdfe856d483
+  size: 126162996
+  hash: md5
+  path: r2plus1d_18_weights.pth
