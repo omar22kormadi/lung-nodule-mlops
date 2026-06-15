@@ -1,37 +1,99 @@
-# Lung Nodule Detection and Classification
+# 🫁 Early-Stage Lung Cancer Detection & Classification - MLOps Pipeline
 
-An end-to-end pipeline for detecting and classifying lung nodules from CT scans. This project leverages state-of-the-art Deep Learning models to provide 3D visual reconstruction and binary malignancy risk assessment from DICOM medical imaging.
+End-to-End Deep Learning project for detecting and assessing the malignancy risk of pulmonary nodules directly from DICOM CT scans.
 
-## Datasets & Preprocessing
+---
 
-The project utilizes two major medical imaging datasets:
+## 📊 Project Overview
 
-*   **LUNA16 (Detection):** Used to train the object detection model to locate nodules.
-    *   **Preprocessing (2.5D Slicing):** Stacked slices with a gap (`Z-2`, `Z`, `Z+2`) mapped into RGB channels. This inter-slice context drastically reduced false positives on blood vessels.
-    *   **Medical Augmentations:** Banned all anatomy-breaking augmentations (e.g., vertical flip, mixup, copy-paste, shear).
-*   **LIDC-IDRI (Classification):** Used to train a 3D CNN to classify nodule malignancy.
-    *   **Preprocessing:** Extracted dense 64x64x64 3D voxel patches centered perfectly around the detected nodules.
-    *   **Simplification:** Dropped auxiliary tasks (margin/spiculation) to focus strictly on a robust binary malignancy objective.
+This project builds and serves a two-stage computer vision pipeline:
+- **Stage 1 (Detection):** YOLOv8m custom-trained on 2.5D slices to locate nodules.
+- **Stage 2 (Classification):** R(2+1)D Dual-Attention 3D CNN to classify nodule malignancy.
+- Integrated into a FastAPI backend and a React 3D viewer frontend.
 
-## Models & Architecture
+---
 
-### 1. Nodule Detection: YOLOv8m (2.5D)
-A modified 2D YOLOv8 model adapted to read 2.5D medical slices.
-*   **Hyperparameters & Training:**
-    *   Optimizer: SGD (lr0=0.001) - *Proven to beat AdamW by +7.82% mAP in ablations.*
-*   **Final Metrics:**
-    *   mAP@50: **0.708** | Precision: **0.737** | Recall: **0.681**
+## 🛠️ Tech Stack
 
-### 2. Nodule Classification: R(2+1)D + Dual Attention
-A powerful 3D Convolutional Neural Network built on ResNet3D-18, enhanced with custom Dual Channel-Attention layers.
-*   **Task:** Binary Malignancy Classification
-*   **Final Metrics:**
-    *   ROC-AUC: **0.953** | Accuracy: **0.881** | Sensitivity: **0.927** | F1: **0.872**
+| Layer                  | Tool / Library                |
+|------------------------|-------------------------------|
+| **Programming**        | Python 3.10, JavaScript       |
+| **Detection Model**    | Ultralytics YOLOv8 (PyTorch)  |
+| **Classification Model**| Custom R(2+1)D (PyTorch)     |
+| **Data Processing**    | Pydicom, SimpleITK, OpenCV    |
+| **Backend API**        | FastAPI, Uvicorn              |
+| **Frontend UI**        | React, Three.js (3D viewer)   |
 
-## Visual Results & Model Performance
+---
+
+## 📁 Project Structure
+
+```
+CRISP-ML(Q)/
+├── 01_Business_and_Data_Understanding/ # EDA & Project Scoping
+├── 02_Model_Development/
+│   ├── data_engineering/               # DICOM to YOLO/3D patches preprocessing
+│   └── ml_model_engineering/
+│       ├── models/                     # Best weights (best.pt, best_model.pth)
+│       └── kgl_yolo_v3.py              # YOLO training logic
+├── 03_Model_Operations/
+│   └── deployment/
+│       ├── api.py                      # FastAPI Backend
+│       ├── start_api.bat               # API launch script
+│       └── frontend/
+│           ├── src/                    # React source code
+│           ├── package.json            # Node dependencies
+│           └── start_frontend.bat      # UI launch script
+├── data/                               # Raw datasets and visualizations
+└── README.md
+```
+
+---
+
+## 🚀 Quickstart (Local)
+
+### 1. Clone the repository
+
+```bash
+git clone "https://github.com/omar22kormadi/lung-nodule-mlops.git"
+cd "lung-nodule-mlops/CRISP-ML(Q)"
+```
+
+### 2. Start the API (FastAPI)
+
+```bash
+cd "03_Model_Operations/deployment"
+# Run using the batch file:
+start_api.bat
+
+# OR run manually:
+uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
+- API Docs: http://127.0.0.1:8000/docs
+
+### 3. Start the UI (React)
+
+Open a **new** terminal:
+```bash
+cd "03_Model_Operations/deployment/frontend"
+npm install
+
+# Run using the batch file:
+start_frontend.bat
+
+# OR run manually:
+npm run dev
+```
+- UI: http://localhost:8080 (or `5173`)
+
+Upload a complete DICOM study (10+ slices) to view the bounding boxes, risk assessment, and interactive 3D lung reconstruction!
+
+---
+
+## 📈 Visual Results & Model Performance
 
 ### Ground Truth vs. Predictions (2.5D YOLOv8m)
-*Notice how the model successfully isolates pulmonary nodules, ignoring complex anatomical distractors such as blood vessels, airways, and the pleural wall.*
+*Notice how the model successfully isolates pulmonary nodules, ignoring complex anatomical distractors such as blood vessels and airways.*
 
 | Ground Truth (Expert Annotations) | Model Predictions (YOLOv8m) |
 |:---:|:---:|
@@ -43,29 +105,20 @@ The training curves demonstrate exceptional stability. The 2.5D spatial context 
 <p align="center">
   <img src="02_Model_Development/ml_model_evaluation/yolo_results/results.png" alt="Training Convergence Curves" width="100%" style="border-radius: 8px;">
 </p>
-## How to Run
 
-To test the models locally, you need to run the FastAPI backend and the React frontend.
+### Final Metrics
 
-### 1. Start the API (Backend)
-Navigate to the deployment folder and start the FastAPI server:
-```bash
-cd 03_Model_Operations/deployment
-# Run using the batch file:
-start_api.bat
-# OR run manually:
-uvicorn api:app --host 0.0.0.0 --port 8000 --reload
-```
-*Note: Ensure your Python environment is activated and the trained model weights are in the correct models folder.*
+| Stage | Model | Task | Key Metric | Value |
+|-------|-------|------|------------|-------|
+| **Detection** | YOLOv8m (2.5D) | Bounding Box | mAP@50 | **0.708** |
+| **Detection** | YOLOv8m (2.5D) | Bounding Box | Precision | **0.737** |
+| **Classification**| R(2+1)D Dual-Attention | Binary Malignancy | ROC-AUC | **0.953** |
+| **Classification**| R(2+1)D Dual-Attention | Binary Malignancy | Sensitivity | **0.927** |
 
-### 2. Start the UI (Frontend)
-Open a new terminal, navigate to the frontend folder, and start the development server:
-```bash
-cd 03_Model_Operations/deployment/frontend
-npm install
-# Run using the batch file:
-start_frontend.bat
-# OR run manually:
-npm run dev
-```
-The application will launch in your browser (typically at `http://localhost:8080`). Upload a complete DICOM study (10+ slices) to view the bounding boxes, risk assessment, and interactive 3D lung reconstruction!
+---
+
+## 👤 Author
+
+- **Name**: Amor Kormadi 
+- **Email**: amor.kormadi@polytechnicien.tn 
+- **Project**: CRISP-ML(Q) Pipeline for Pulmonary Nodule Detection and Classification 
