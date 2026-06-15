@@ -1,0 +1,6 @@
+outs:
+- md5: a1bce595cb563b5b48ca8bcb62dc72c3.dir
+  size: 3014985015
+  nfiles: 15373
+  hash: md5
+  path: luna16_yolo_dataset_v4
