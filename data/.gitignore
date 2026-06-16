@@ -5,5 +5,3 @@ data/classification_dataset.zip
 data/luna16_yolo_dataset_v4/images/
 data/luna16_yolo_dataset_v4/labels/
 data/luna16_yolo_dataset_v4.rar
-data/labeled/
-!data/labeled/metadata.csv
