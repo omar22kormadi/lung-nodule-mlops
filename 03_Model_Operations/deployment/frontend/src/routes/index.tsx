@@ -101,6 +101,12 @@ function Index() {
   const [meshLoading, setMeshLoading] = useState(false);
   const [meshError, setMeshError] = useState<string | null>(null);
   const [meshData, setMeshData] = useState<{ lung_mesh?: any; nodules?: any[] } | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [dicomFiles, setDicomFiles] = useState<File[]>([]);
+  const [feedback, setFeedback] = useState<Record<number, boolean>>({});
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -147,12 +153,43 @@ function Index() {
       for (const f of files) fd.append("files", f);
       setMeshData(null);
       setMeshError(null);
+      setFeedback({});
+      setSaved(false);
+      setSaveMsg(null);
+      setDicomFiles(files);
       const { data } = await axios.post(`${API_URL}/api/predict/dicom`, fd);
       setDicomResult(data);
+      setSessionId(data?.session_id ?? null);
       if (data?.session_id) {
         fetchMesh(data.session_id);
       }
     });
+
+  const saveScan = async () => {
+    if (!sessionId) return;
+    const confirmed = (dicomResult?.nodules ?? [])
+      .map((_: any, i: number) => i)
+      .filter((i) => feedback[i] === true);
+    if (confirmed.length === 0) {
+      setSaveMsg("No confirmed predictions to save.");
+      return;
+    }
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append("session_id", sessionId);
+      fd.append("confirmed_indices", JSON.stringify(confirmed));
+      for (const f of dicomFiles) fd.append("dicom_files", f);
+      await axios.post(`${API_URL}/api/save/labeled`, fd);
+      setSaved(true);
+      setSaveMsg("✅ Scan saved successfully! Thank you for helping improve the model.");
+    } catch (err: any) {
+      setSaveMsg(err.response?.data?.detail || err.message || "Failed to save scan");
+    } finally {
+      setSaving(false);
+    }
+  };
 
 
 
@@ -213,7 +250,7 @@ function Index() {
             ["dicom", "DICOM upload"],
             ["cls-test", "Classification test"],
             ["det-test", "Detection test"],
-            ["evaluate", "Evaluate models"],
+            // ["evaluate", "Evaluate models"],
           ].map(([id, label]) => (
             <button
               key={id}
@@ -330,35 +367,131 @@ function Index() {
 
               {dicomResult.nodules?.length ? (
                 <div style={{ marginTop: 16 }}>
-                  {dicomResult.nodules.map((n: any, i: number) => (
-                    <div
-                      key={i}
-                      style={{
-                        marginBottom: 8,
-                        padding: 12,
-                        background: theme.bg,
-                        borderRadius: 8,
-                        fontSize: 13,
-                      }}
-                    >
-                      <div>
-                        Slice z={n.z} · conf={n.confidence?.toFixed(3)}
-                        {n.mal_prob != null && (
-                          <span style={{ ...badge(n.mal_prob < 0.5), marginLeft: 10 }}>
-                            mal {(n.mal_prob * 100).toFixed(0)}%
-                          </span>
-                        )}
-                      </div>
-                      {n.classification?.malignancy?.label && (
-                        <div style={{ marginTop: 6, color: theme.muted }}>
-                          {n.classification.malignancy.label}
+                  {dicomResult.nodules.map((n: any, i: number) => {
+                    const ans = feedback[i];
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          marginBottom: 8,
+                          padding: "10px 12px",
+                          background: theme.bg,
+                          borderRadius: 8,
+                          fontSize: 13,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                          gap: 8,
+                        }}
+                      >
+                        <div>
+                          <div>
+                            Slice z={n.z} · conf={n.confidence?.toFixed(3)}
+                            {n.mal_prob != null && (
+                              <span style={{ ...badge(n.mal_prob < 0.5), marginLeft: 10 }}>
+                                mal {(n.mal_prob * 100).toFixed(0)}%
+                              </span>
+                            )}
+                          </div>
+                          {n.classification?.malignancy?.label && (
+                            <div style={{ marginTop: 4, color: theme.muted }}>
+                              {n.classification.malignancy.label}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ color: theme.muted, fontSize: 12 }}>Correct?</span>
+                          <button
+                            type="button"
+                            onClick={() => setFeedback((p) => ({ ...p, [i]: true }))}
+                            style={{
+                              ...btn("success", false),
+                              padding: "5px 12px",
+                              fontSize: 12,
+                              opacity: ans === true ? 1 : ans === false ? 0.35 : 0.9,
+                              outline: ans === true ? `2px solid ${theme.success}` : "none",
+                            }}
+                          >
+                            ✅
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFeedback((p) => ({ ...p, [i]: false }))}
+                            style={{
+                              padding: "5px 12px",
+                              fontSize: 12,
+                              borderRadius: 8,
+                              border: "none",
+                              cursor: "pointer",
+                              fontWeight: 600,
+                              color: "#fff",
+                              background: theme.danger,
+                              opacity: ans === false ? 1 : ans === true ? 0.35 : 0.9,
+                              outline: ans === false ? `2px solid ${theme.danger}` : "none",
+                            }}
+                          >
+                            ❌
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : null}
             </div>
+
+            {dicomResult.nodules?.length ? (() => {
+              const nodules = dicomResult.nodules!;
+              const allAnswered = nodules.every((_: any, i: number) => feedback[i] !== undefined);
+              const confirmedCount = nodules.filter((_: any, i: number) => feedback[i] === true).length;
+              return (
+                <>
+                  {allAnswered && !saved && (
+                    <div style={styles.card}>
+                      <h3 style={{ marginTop: 0 }}>Save scan</h3>
+                      <p style={{ margin: "0 0 12px", fontSize: 14 }}>
+                        Would you like to save this scan to help improve the model?
+                      </p>
+                      {confirmedCount === 0 && (
+                        <p style={{ margin: "0 0 12px", fontSize: 12, color: theme.muted }}>
+                          Only confirmed nodules will be saved.
+                        </p>
+                      )}
+                      {confirmedCount < nodules.length && confirmedCount > 0 && (
+                        <p style={{ margin: "0 0 12px", fontSize: 12, color: theme.muted }}>
+                          Only confirmed nodules will be saved.
+                        </p>
+                      )}
+                      <button
+                        type="button"
+                        style={btn("success", saving)}
+                        disabled={saving}
+                        onClick={saveScan}
+                      >
+                        {saving ? "Saving…" : "Save Scan"}
+                      </button>
+                    </div>
+                  )}
+                  {saveMsg && (
+                    <div style={styles.card}>
+                      <div
+                        style={{
+                          padding: 12,
+                          borderRadius: 8,
+                          background: saved ? "rgba(52,211,153,0.15)" : "rgba(244,63,94,0.15)",
+                          border: `1px solid ${saved ? theme.success : theme.danger}`,
+                          color: saved ? theme.success : "#fecaca",
+                          fontSize: 13,
+                        }}
+                      >
+                        {saveMsg}
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })() : null}
 
             {mounted && (
               <Suspense

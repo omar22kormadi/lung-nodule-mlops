@@ -1,0 +1,2 @@
+scan_id,timestamp,model_version,source,num_nodules,notes
+7dfd88ac-983d-41c3-a14a-f9563aa06a13,2026-06-16T18:47:50.985665,yolov8m_v3.3 + r2plus1d_v3.3,user_upload,4,"confirmed_indices=[0, 1, 2, 3]"

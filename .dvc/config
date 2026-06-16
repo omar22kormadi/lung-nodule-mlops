@@ -2,5 +2,3 @@
     remote = azureremote
 ['remote "azureremote"']
     url = azure://lung-data/dvc-data
-['remote "azure_storage"']
-    url = azure://lung-data/dvc-data

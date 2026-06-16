@@ -13,9 +13,13 @@ Run:  uvicorn api:app --reload --host 0.0.0.0 --port 8000
 from __future__ import annotations
 
 import base64
+import csv
+import datetime
 import io
+import json
 import os
 import random
+import shutil
 import tempfile
 import uuid
 import pickle
@@ -51,6 +55,14 @@ CLASSIFICATION_META = PROJECT_ROOT / "data" / "classification_dataset" / "metada
 YOLO_DATASET_DIR = PROJECT_ROOT / "data" / "luna16_yolo_dataset_v4"
 DETECTION_TEST_IMAGES = YOLO_DATASET_DIR / "images" / "test"
 DETECTION_TEST_LABELS = YOLO_DATASET_DIR / "labels" / "test"
+
+# Monitoring & labeled data paths
+MONITORING_LOG  = PROJECT_ROOT / "data" / "monitoring" / "predictions_log.csv"
+LABELED_DIR     = PROJECT_ROOT / "data" / "labeled"
+LABELED_META    = LABELED_DIR / "metadata.csv"
+
+# Model version string (update when you retrain)
+MODEL_VERSION = "yolov8m_v3.3 + r2plus1d_v3.3"
 
 # Preprocessing constants (must match training)
 HU_WINDOW_CENTER = -600.0
@@ -814,6 +826,9 @@ async def predict_dicom(
                 "nodule_results": nodule_results
             }, f)
 
+        # Log prediction to monitoring CSV
+        _log_prediction(session_id, [d, h, w], nodule_results, user_saved=False)
+
         return {
             "success": True,
             "session_id": session_id,
@@ -838,6 +853,172 @@ async def predict_dicom(
 @app.get("/api/test/sample")
 def legacy_test_sample():
     return classification_test_sample()
+
+
+# =============================================================================
+# Monitoring helpers (inline — no import needed)
+# =============================================================================
+_LOG_COLUMNS = [
+    "timestamp", "scan_id", "model_version", "num_nodules",
+    "nodule_index", "yolo_confidence", "mal_probability", "mal_label",
+    "diameter_mm", "volume_depth", "volume_height", "volume_width", "user_saved",
+]
+
+
+def _log_prediction(
+    scan_id: str,
+    volume_shape: list[int],
+    nodule_results: list[dict],
+    user_saved: bool = False,
+) -> None:
+    """Append prediction rows to data/monitoring/predictions_log.csv."""
+    MONITORING_LOG.parent.mkdir(parents=True, exist_ok=True)
+    write_header = not MONITORING_LOG.exists()
+    timestamp = datetime.datetime.utcnow().isoformat()
+    d, h, w = volume_shape if len(volume_shape) == 3 else (0, 0, 0)
+
+    rows = []
+    if not nodule_results:
+        rows.append({
+            "timestamp": timestamp, "scan_id": scan_id,
+            "model_version": MODEL_VERSION, "num_nodules": 0,
+            "nodule_index": -1, "yolo_confidence": None,
+            "mal_probability": None, "mal_label": "No Nodule",
+            "diameter_mm": None,
+            "volume_depth": d, "volume_height": h, "volume_width": w,
+            "user_saved": user_saved,
+        })
+    else:
+        for i, nd in enumerate(nodule_results):
+            cls = nd.get("classification", {})
+            mal = cls.get("malignancy", {})
+            rows.append({
+                "timestamp": timestamp, "scan_id": scan_id,
+                "model_version": MODEL_VERSION,
+                "num_nodules": len(nodule_results),
+                "nodule_index": i,
+                "yolo_confidence": round(float(nd.get("confidence", 0)), 4),
+                "mal_probability": round(float(nd.get("mal_prob", 0)), 4),
+                "mal_label": mal.get("label", "Unknown"),
+                "diameter_mm": round(float(nd.get("diameter_mm", 0)), 2),
+                "volume_depth": d, "volume_height": h, "volume_width": w,
+                "user_saved": user_saved,
+            })
+
+    with open(MONITORING_LOG, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=_LOG_COLUMNS)
+        if write_header:
+            writer.writeheader()
+        writer.writerows(rows)
+
+
+# =============================================================================
+# Save labeled data endpoint
+# =============================================================================
+
+
+@app.post("/api/save/labeled")
+async def save_labeled(
+    session_id: str = Form(...),
+    confirmed_indices: str = Form(..., description="JSON array of confirmed nodule indices, e.g. [0,2]"),
+    dicom_files: list[UploadFile] = File(...),
+):
+    """
+    Called when the user confirms their nodule feedback in the frontend.
+
+    - Receives the original DICOM files again.
+    - Receives which nodule predictions the user verified as correct.
+    - Saves the raw DICOM files to data/labeled/<scan_id>/dicoms/
+    - Saves a YOLO-format labels.txt for each confirmed nodule.
+    - Appends a row to data/labeled/metadata.csv.
+    - Updates the predictions_log.csv user_saved flag.
+    """
+    try:
+        indices: list[int] = json.loads(confirmed_indices)
+    except Exception:
+        raise HTTPException(400, "confirmed_indices must be a valid JSON array, e.g. [0,1]")
+
+    # Load the session to get nodule results
+    session_path = os.path.join(tempfile.gettempdir(), f"lung_session_{session_id}.pkl")
+    if not os.path.exists(session_path):
+        raise HTTPException(
+            404,
+            "Session not found or expired. Note: the 3D mesh endpoint deletes sessions. "
+            "Please re-run prediction and save before requesting the 3D mesh."
+        )
+
+    with open(session_path, "rb") as f:
+        session = pickle.load(f)
+
+    nodule_results: list[dict] = session["nodule_results"]
+    volume_hu: np.ndarray = session["volume_hu"]
+    d, h, w = volume_hu.shape
+
+    # Validate indices
+    valid_indices = [i for i in indices if 0 <= i < len(nodule_results)]
+    if not valid_indices:
+        raise HTTPException(400, "No valid nodule indices provided.")
+
+    # Create scan folder under data/labeled/<scan_id>/
+    scan_id = session_id  # reuse session_id as unique scan folder name
+    scan_dir = LABELED_DIR / scan_id
+    dicom_dir = scan_dir / "dicoms"
+    dicom_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save raw DICOM files
+    for f in dicom_files:
+        if not f.filename.lower().endswith(".dcm"):
+            continue
+        dest = dicom_dir / f.filename
+        content = await f.read()
+        dest.write_bytes(content)
+
+    # Save YOLO-format labels.txt for each confirmed nodule
+    # Format per line: 0 cx_norm cy_norm w_norm h_norm
+    labels_lines = []
+    for idx in valid_indices:
+        nd = nodule_results[idx]
+        x1, y1, x2, y2 = nd["bbox_xyxy"]
+        cx = ((x1 + x2) / 2) / w
+        cy = ((y1 + y2) / 2) / h
+        bw = (x2 - x1) / w
+        bh = (y2 - y1) / h
+        labels_lines.append(f"0 {cx:.6f} {cy:.6f} {bw:.6f} {bh:.6f}")
+
+    labels_path = scan_dir / "labels.txt"
+    labels_path.write_text("\n".join(labels_lines), encoding="utf-8")
+
+    # Append to labeled/metadata.csv
+    LABELED_META.parent.mkdir(parents=True, exist_ok=True)
+    write_header = not LABELED_META.exists() or LABELED_META.stat().st_size == 0
+    timestamp = datetime.datetime.utcnow().isoformat()
+    with open(LABELED_META, "a", newline="", encoding="utf-8") as mf:
+        writer = csv.DictWriter(
+            mf,
+            fieldnames=["scan_id", "timestamp", "model_version", "source", "num_nodules", "notes"]
+        )
+        if write_header:
+            writer.writeheader()
+        writer.writerow({
+            "scan_id": scan_id,
+            "timestamp": timestamp,
+            "model_version": MODEL_VERSION,
+            "source": "user_upload",
+            "num_nodules": len(valid_indices),
+            "notes": f"confirmed_indices={valid_indices}",
+        })
+
+    # Update monitoring log: mark this scan as user_saved=True
+    _log_prediction(scan_id, [d, h, w], [nodule_results[i] for i in valid_indices], user_saved=True)
+
+    return {
+        "success": True,
+        "scan_id": scan_id,
+        "saved_to": str(scan_dir),
+        "num_dicoms_saved": len(list(dicom_dir.glob("*.dcm"))),
+        "confirmed_nodules": len(valid_indices),
+        "labels_file": str(labels_path),
+    }
 
 
 if __name__ == "__main__":
@@ -880,10 +1061,3 @@ def get_dicom_mesh(session_id: str = Query(...)):
         }
     except Exception as e:
         raise HTTPException(500, f"Failed to generate meshes: {e}")
-    finally:
-        # Clean up session file
-        try:
-            if os.path.exists(session_path):
-                os.remove(session_path)
-        except OSError:
-            pass
