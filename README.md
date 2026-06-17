@@ -23,41 +23,82 @@ This project builds and serves a two-stage computer vision pipeline:
 | **Data Processing**    | Pydicom, SimpleITK, OpenCV    |
 | **Backend API**        | FastAPI, Uvicorn              |
 | **Frontend UI**        | React, Three.js (3D viewer)   |
+| **MLOps & Deployment** | Docker, DVC, Azure Blob Storage|
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 CRISP-ML(Q)/
-├── 01_Business_and_Data_Understanding/ # EDA & Project Scoping
+├── .dvc/                               # Data Version Control config (Azure remote)
+├── 01_Business_and_Data_Understanding/ # EDA, project scoping, & analysis reports
 ├── 02_Model_Development/
-│   ├── data_engineering/               # DICOM to YOLO/3D patches preprocessing
-│   └── ml_model_engineering/
-│       ├── models/                     # Best weights (best.pt, best_model.pth)
-│       └── kgl_yolo_v3.py              # YOLO training logic
+│   ├── data_engineering/               # Preprocessing pipelines (LUNA16, LIDC)
+│   ├── ml_model_engineering/           # Training scripts & model weights (*.pt)
+│   └── ml_model_evaluation/            # Metrics, plots, & confusion matrices
 ├── 03_Model_Operations/
-│   └── deployment/
-│       ├── api.py                      # FastAPI Backend
-│       ├── start_api.bat               # API launch script
-│       └── frontend/
-│           ├── src/                    # React source code
-│           ├── package.json            # Node dependencies
-│           └── start_frontend.bat      # UI launch script
-├── data/                               # Raw datasets and visualizations
+│   ├── deployment/                     # Production codebase
+│   │   ├── api.py                      # FastAPI Backend
+│   │   └── frontend/                   # React/Vite UI
+│   └── monitoring_and_maintenance/     # Drift detection, logging & alerts
+├── data/                               # DVC-tracked data (ignored by Git)
+│   ├── classification_dataset.dvc      # R(2+1)D training data pointer
+│   ├── luna16_yolo_dataset_v4.dvc      # YOLOv8 training data pointer
+│   ├── monitoring/                     # Production prediction logs & baselines
+│   └── labeled/                        # User-verified DICOMs & labels
+├── docker-compose.yml                  # Multi-container orchestration
+├── Dockerfile                          # Backend container
+├── requirements.txt                    # Clean production API deps
 └── README.md
 ```
 
 ---
 
-## 🚀 Quickstart (Local)
+## 🚀 Quickstart (Docker / Recommended)
 
-### 1. Clone the repository
+The easiest way to run the entire MLOps pipeline locally is using Docker Compose.
+
+### 1. Clone the repository & Pull Data
 
 ```bash
 git clone "https://github.com/omar22kormadi/lung-nodule-mlops.git"
 cd "lung-nodule-mlops/CRISP-ML(Q)"
+
+# Pull the heavy datasets and model weights from Azure Blob Storage
+dvc pull
 ```
+
+### 2. Run with Docker Compose
+
+```bash
+docker-compose up --build
+```
+
+- **Frontend UI:** http://localhost:8080
+- **Backend API:** http://localhost:8000/docs
+
+*(Note: The first run downloads ~4GB of PyTorch GPU dependencies. If you don't need GPU inference, you can uncomment the CPU flag in `requirements.txt`).*
+
+---
+
+## 💾 Data & Model Versioning (DVC)
+
+Because medical datasets (DICOM) and model weights (`.pt`) are massive, they are strictly versioned using **Data Version Control (DVC)** and hosted securely on **Azure Blob Storage**.
+
+As the Dockerized app runs, user-verified CT scans are automatically saved to the persistent `data/labeled/` volume. To version this new data and push it to Azure for future retraining:
+
+```bash
+dvc add data/labeled data/monitoring
+git add data/labeled.dvc data/monitoring.dvc
+git commit -m "Tracking new user-labeled scans"
+dvc push
+git push
+```
+
+---
+
+## 🛠️ Quickstart (Manual / Legacy)
 
 ### 2. Start the API (FastAPI)
 
