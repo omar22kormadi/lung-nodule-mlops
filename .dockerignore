@@ -1,0 +1,35 @@
+# Ignore large data folders (they are mapped via volumes anyway)
+data/
+archive/
+
+# Ignore version control
+.git/
+.dvc/
+.dvcignore
+.gitignore
+
+# Ignore node_modules
+node_modules/
+**/node_modules/
+03_Model_Operations/deployment/frontend/node_modules/
+
+# Ignore Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env/
+.venv/
+
+# Ignore MLflow DBs
+mlruns/
+02_Model_Development/ml_model_engineering/archive/
+02_Model_Development/ml_model_engineering/mlruns/
+02_Model_Development/ml_model_engineering/*.db
+
+# Ignore IDE files
+.vscode/
+.idea/
