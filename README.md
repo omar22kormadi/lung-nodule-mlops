@@ -168,7 +168,7 @@ Both containers are configured with:
 - [x] DICOM preprocessing pipelines (LUNA16 & LIDC-IDRI)
 - [x] 2.5D YOLOv8m nodule detection (mAP@50: 0.708)
 - [x] R(2+1)D Dual-Attention 3D CNN classification (AUC: 0.953)
-- [x] Interactive React 3D CT viewer with Three.js
+- [x] Interactive React CT viewer
 - [x] Human-in-the-loop labeling pipeline (save verified scans)
 - [x] Data versioning with DVC + Azure Blob Storage
 - [x] Production monitoring & drift detection
