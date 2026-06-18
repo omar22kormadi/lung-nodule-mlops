@@ -4,12 +4,21 @@ End-to-End Deep Learning project for detecting and assessing the malignancy risk
 
 ---
 
+## 🌐 Live Deployment
+
+### 🖥️ React (UI)
+
+- **URL**: http://lung-frontend-app.spaincentral.azurecontainer.io:8080
+
+
+---
+
 ## 📊 Project Overview
 
 This project builds and serves a two-stage computer vision pipeline:
 - **Stage 1 (Detection):** YOLOv8m custom-trained on 2.5D slices to locate nodules.
 - **Stage 2 (Classification):** R(2+1)D Dual-Attention 3D CNN to classify nodule malignancy.
-- Integrated into a FastAPI backend and a React 3D viewer frontend.
+- Integrated into a FastAPI backend and a React frontend.
 
 ---
 
@@ -19,10 +28,10 @@ This project builds and serves a two-stage computer vision pipeline:
 |------------------------|-------------------------------|
 | **Programming**        | Python 3.10, JavaScript       |
 | **Detection Model**    | Ultralytics YOLOv8 (PyTorch)  |
-| **Classification Model**| Custom R(2+1)D (PyTorch)     |
+| **Classification Model**| R(2+1)D (PyTorch)             |
 | **Data Processing**    | Pydicom, SimpleITK, OpenCV    |
 | **Backend API**        | FastAPI, Uvicorn              |
-| **Frontend UI**        | React, Three.js (3D viewer)   |
+| **Frontend UI**        | React                         |
 | **MLOps & Deployment** | Docker, DVC, Azure Blob Storage|
 
 ---
@@ -78,7 +87,7 @@ docker-compose up --build
 - **Frontend UI:** http://localhost:8080
 - **Backend API:** http://localhost:8000/docs
 
-*(Note: The first run downloads ~4GB of PyTorch GPU dependencies. If you don't need GPU inference, you can uncomment the CPU flag in `requirements.txt`).*
+*(Note: The first run downloads ~400MB of PyTorch CPU dependencies. To use the GPU version, comment out the CPU flag in `requirements.txt`).*
 
 ---
 
@@ -98,7 +107,7 @@ git push
 
 ---
 
-## 🛠️ Quickstart (Manual / Legacy)
+## 🛠️ Quickstart (Manual)
 
 ### 2. Start the API (FastAPI)
 
@@ -130,6 +139,41 @@ npm run dev
 Upload a complete DICOM study (10+ slices) to view the bounding boxes, risk assessment, and interactive 3D lung reconstruction!
 
 ---
+
+## ☁️ Azure Deployment
+
+The project is deployed to **Azure Container Instances** (region: Spain Central) with a persistent **Azure File Share** for labeled DICOM storage:
+
+- **Frontend UI:**
+  - Image: `lungnoduleacr.azurecr.io/frontend:latest`
+  - Public interface: http://lung-frontend-app.spaincentral.azurecontainer.io:8080
+
+- **Backend API:**
+  - Image: `lungnoduleacr.azurecr.io/backend:latest`
+
+Both containers are configured with:
+- Public IP and DNS name labels (Spain Central region)
+- Persistent Azure File Share (`lung-app-data`) mounted to `/app/data`
+- CPU inference (no GPU required)
+
+---
+
+## ✅ Implemented Features
+
+- [x] DICOM preprocessing pipelines (LUNA16 & LIDC-IDRI)
+- [x] 2.5D YOLOv8m nodule detection (mAP@50: 0.708)
+- [x] R(2+1)D Dual-Attention 3D CNN classification (AUC: 0.953)
+- [x] Interactive React 3D CT viewer with Three.js
+- [x] Human-in-the-loop labeling pipeline (save verified scans)
+- [x] Data versioning with DVC + Azure Blob Storage
+- [x] Production monitoring & drift detection
+- [x] Dockerized backend & frontend
+- [x] Local Docker Compose orchestration
+- [x] Azure Container Instances deployment (CPU inference)
+
+---
+
+
 
 ## 📈 Visual Results & Model Performance
 

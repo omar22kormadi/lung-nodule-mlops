@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type Slice = { index: number; image: string };
 
@@ -11,7 +11,8 @@ const theme = {
   accent: "#6366f1",
 };
 
-export default function CTSliceViewer({ slices }: { slices: Slice[] }) {
+export default function CTSliceViewer({ slices: slicesProp }: { slices: Slice[] }) {
+  const slices = useMemo(() => [...(slicesProp ?? [])].reverse(), [slicesProp]);
   const [idx, setIdx] = useState(0);
   const [zoom, setZoom] = useState(1);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -19,7 +20,7 @@ export default function CTSliceViewer({ slices }: { slices: Slice[] }) {
   useEffect(() => {
     setIdx(0);
     setZoom(1);
-  }, [slices]);
+  }, [slicesProp]);
 
   useEffect(() => {
     const el = wrapRef.current;

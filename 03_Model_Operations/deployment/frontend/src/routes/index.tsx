@@ -367,7 +367,10 @@ function Index() {
 
               {dicomResult.nodules?.length ? (
                 <div style={{ marginTop: 16 }}>
-                  {dicomResult.nodules.map((n: any, i: number) => {
+                  {[...dicomResult.nodules]
+                    .map((n: any, i: number) => ({ n, i }))
+                    .sort((a, b) => (a.n.z ?? 0) - (b.n.z ?? 0))
+                    .map(({ n, i }) => {
                     const ans = feedback[i];
                     return (
                       <div
@@ -578,3 +581,4 @@ function Index() {
     </div>
   );
 }
+

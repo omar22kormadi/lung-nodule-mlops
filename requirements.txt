@@ -1,7 +1,5 @@
-# Note: The first run downloads ~4GB of PyTorch GPU dependencies. 
-# If you don't need GPU inference, uncomment the line below to use the much smaller CPU version:
-
-# --extra-index-url https://download.pytorch.org/whl/cpu
+# To switch back to GPU version, remove the line below:
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi>=0.103.1
 uvicorn>=0.23.2
 python-multipart>=0.0.6
