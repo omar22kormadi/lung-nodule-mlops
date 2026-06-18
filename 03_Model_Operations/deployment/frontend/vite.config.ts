@@ -12,7 +12,7 @@ export default defineConfig({
   },
   vite: {
     server: {
-      allowedHosts: ["lung-frontend-app.spaincentral.azurecontainer.io"],
+      allowedHosts: true,
     },
   },
 });
