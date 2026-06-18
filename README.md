@@ -11,6 +11,11 @@ End-to-End Deep Learning project for detecting and assessing the malignancy risk
 - **URL**: http://lung-frontend-app.spaincentral.azurecontainer.io:8080
 
 
+<p align="center">
+  <img src="./data/front.png" alt="Training Convergence Curves" width="100%" style="border-radius: 8px;">
+</p>
+
+
 ---
 
 ## 📊 Project Overview
