@@ -1,0 +1,103 @@
+name: 🚀 Build & Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build, Push & Redeploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout code ──────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Login to Azure ─────────────────────────────────────────────────
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ── 3. Login to Azure Container Registry ──────────────────────────────
+      - name: Login to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: lungnoduleacr.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # ── 4. Build & Push Backend image ─────────────────────────────────────
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: true
+          tags: lungnoduleacr.azurecr.io/backend:latest
+
+      # ── 5. Build & Push Frontend image ────────────────────────────────────
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./03_Model_Operations/deployment/frontend
+          dockerfile: ./03_Model_Operations/deployment/frontend/Dockerfile
+          push: true
+          tags: lungnoduleacr.azurecr.io/frontend:latest
+
+      # ── 6. Redeploy Backend on ACI ────────────────────────────────────────
+      # ACI does not support rolling updates — we delete and recreate.
+      - name: Redeploy Backend container
+        run: |
+          az container delete \
+            --resource-group mlops-lung \
+            --name lung-backend \
+            --yes || true
+
+          az container create \
+            --resource-group mlops-lung \
+            --name lung-backend \
+            --image lungnoduleacr.azurecr.io/backend:latest \
+            --registry-login-server lungnoduleacr.azurecr.io \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }} \
+            --ports 8000 \
+            --cpu 2 --memory 4 \
+            --os-type Linux \
+            --dns-name-label lung-backend-app \
+            --azure-file-volume-account-name mlopslung2026 \
+            --azure-file-volume-account-key "${{ secrets.STORAGE_KEY }}" \
+            --azure-file-volume-share-name lung-app-data \
+            --azure-file-volume-mount-path /app/data
+
+      # ── 7. Redeploy Frontend on ACI ───────────────────────────────────────
+      - name: Get Backend IP
+        id: backend_ip
+        run: |
+          IP=$(az container show \
+            --resource-group mlops-lung \
+            --name lung-backend \
+            --query ipAddress.ip -o tsv)
+          echo "ip=$IP" >> $GITHUB_OUTPUT
+
+      - name: Redeploy Frontend container
+        run: |
+          az container delete \
+            --resource-group mlops-lung \
+            --name lung-frontend \
+            --yes || true
+
+          az container create \
+            --resource-group mlops-lung \
+            --name lung-frontend \
+            --image lungnoduleacr.azurecr.io/frontend:latest \
+            --registry-login-server lungnoduleacr.azurecr.io \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }} \
+            --ports 8080 \
+            --cpu 1 --memory 1 \
+            --os-type Linux \
+            --dns-name-label lung-frontend-app \
+            --environment-variables VITE_API_URL=http://${{ steps.backend_ip.outputs.ip }}:8000
