@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const API_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:8000";
+const API_URL = (import.meta as any).env?.VITE_API_URL || "https://lung-backend.polytecsousse.dev";
 
 const theme = {
   bg: "#0f1117",
@@ -94,8 +94,6 @@ function Index() {
   const [health, setHealth] = useState<any>(null);
   const [result, setResult] = useState<ApiResult | null>(null);
   const [dicomResult, setDicomResult] = useState<ApiResult | null>(null);
-  const [evalCls, setEvalCls] = useState<any>(null);
-  const [evalDet, setEvalDet] = useState<any>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [mounted, setMounted] = useState(false);
   const [meshLoading, setMeshLoading] = useState(false);
@@ -206,26 +204,6 @@ function Index() {
       setResult(data);
     });
 
-  const evaluateClassification = () =>
-    run(async () => {
-      const { data } = await axios.post(`${API_URL}/api/evaluate/classification`);
-      setEvalCls(data);
-    });
-
-  const evaluateDetection = () =>
-    run(async () => {
-      const { data } = await axios.post(`${API_URL}/api/evaluate/detection?limit=100`);
-      setEvalDet(data);
-    });
-
-  const renderMetrics = (data: any, title: string) => (
-    <div style={styles.card}>
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
-      <pre style={{ fontSize: 13, overflow: "auto", color: theme.muted }}>
-        {JSON.stringify(data, null, 2)}
-      </pre>
-    </div>
-  );
 
   const mal = result?.prediction?.malignancy;
   const topNodule = result?.nodules?.[0];
@@ -250,7 +228,7 @@ function Index() {
             ["dicom", "DICOM upload"],
             ["cls-test", "Classification test"],
             ["det-test", "Detection test"],
-            // ["evaluate", "Evaluate models"],
+            
           ].map(([id, label]) => (
             <button
               key={id}
@@ -342,21 +320,6 @@ function Index() {
           </div>
         )}
 
-        {tab === "evaluate" && (
-          <div style={styles.card}>
-            <h3 style={{ marginTop: 0 }}>Run evaluation on held-out test data</h3>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <button type="button" style={btn("success", loading)} disabled={loading} onClick={evaluateClassification}>
-                Evaluate classifier (full test set)
-              </button>
-              <button type="button" style={btn("success", loading)} disabled={loading} onClick={evaluateDetection}>
-                Evaluate YOLO (100 images)
-              </button>
-            </div>
-            {evalCls && renderMetrics(evalCls, "Classification metrics")}
-            {evalDet && renderMetrics(evalDet, "Detection metrics (subset)")}
-          </div>
-        )}
 
         {/* DICOM tab: only show results after inference completes */}
         {tab === "dicom" && dicomResult && (
@@ -369,40 +332,42 @@ function Index() {
                 <div style={{ marginTop: 16 }}>
                   {[...dicomResult.nodules]
                     .map((n: any, i: number) => ({ n, i }))
-                    .sort((a, b) => (a.n.z ?? 0) - (b.n.z ?? 0))
+                    .sort((a, b) => (b.n.z ?? 0) - (a.n.z ?? 0))
                     .map(({ n, i }) => {
-                    const ans = feedback[i];
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          marginBottom: 8,
-                          padding: "10px 12px",
-                          background: theme.bg,
-                          borderRadius: 8,
-                          fontSize: 13,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          flexWrap: "wrap",
-                          gap: 8,
-                        }}
-                      >
-                        <div>
+                      const totalSlices = dicomResult.slices?.length ?? 0;
+                      const sliceNumber = totalSlices - (n.z ?? 0);
+                      const ans = feedback[i];
+                      return (
+                        <div
+                          key={i}
+                          style={{
+                            marginBottom: 8,
+                            padding: "10px 12px",
+                            background: theme.bg,
+                            borderRadius: 8,
+                            fontSize: 13,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: 8,
+                          }}
+                        >
                           <div>
-                            Slice z={n.z} · conf={n.confidence?.toFixed(3)}
-                            {n.mal_prob != null && (
-                              <span style={{ ...badge(n.mal_prob < 0.5), marginLeft: 10 }}>
-                                mal {(n.mal_prob * 100).toFixed(0)}%
-                              </span>
+                            <div>
+                              Slice {sliceNumber} · conf={n.confidence?.toFixed(3)}
+                              {n.mal_prob != null && (
+                                <span style={{ ...badge(n.mal_prob < 0.5), marginLeft: 10 }}>
+                                  mal {(n.mal_prob * 100).toFixed(0)}%
+                                </span>
+                              )}
+                            </div>
+                            {n.classification?.malignancy?.label && (
+                              <div style={{ marginTop: 4, color: theme.muted }}>
+                                {n.classification.malignancy.label}
+                              </div>
                             )}
                           </div>
-                          {n.classification?.malignancy?.label && (
-                            <div style={{ marginTop: 4, color: theme.muted }}>
-                              {n.classification.malignancy.label}
-                            </div>
-                          )}
-                        </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <span style={{ color: theme.muted, fontSize: 12 }}>Correct?</span>
                           <button
@@ -581,4 +546,3 @@ function Index() {
     </div>
   );
 }
-

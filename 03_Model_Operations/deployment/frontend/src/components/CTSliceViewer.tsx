@@ -71,7 +71,7 @@ export default function CTSliceViewer({ slices: slicesProp }: { slices: Slice[] 
         <div style={{ fontSize: 13, color: theme.muted }}>
           Slice <strong style={{ color: theme.text }}>{idx + 1}</strong> / {slices.length}
           {current?.index != null && (
-            <span style={{ marginLeft: 8, opacity: 0.7 }}>(z={current.index})</span>
+            <span style={{ marginLeft: 8, opacity: 0.7 }}>(z={idx + 1})</span>
           )}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>

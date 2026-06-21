@@ -32,8 +32,9 @@ import pandas as pd
 import pydicom
 import torch
 import torch.nn as nn
-from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from torchvision.models.video import r2plus1d_18
 from ultralytics import YOLO
 import skimage.measure
@@ -90,7 +91,9 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 device: torch.device | None = None
 classifier: nn.Module | None = None
@@ -421,7 +424,7 @@ def box_iou(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> float
     area_b = (bx2 - bx1) * (by2 - by1)
     return inter / max(area_a + area_b - inter, 1e-6)
 
-
+'''*******************************************************************************************************************************************************  '''
 def generate_nodule_mesh(patch_normalized: np.ndarray, threshold: float = 0.4) -> dict[str, list]:
     """Generate a lightweight 3D mesh from the 64x64x64 nodule patch for frontend rendering."""
     try:
@@ -434,11 +437,13 @@ def generate_nodule_mesh(patch_normalized: np.ndarray, threshold: float = 0.4) -
         verts = verts - 33.0
         return {
             "vertices": verts.flatten().tolist(),
-            "faces": faces.flatten().tolist()
+            # "faces": faces.flatten().tolist()
         }
     except Exception as e:
         print(f"[WARN] Failed to generate 3D mesh: {e}")
         return {"vertices": [], "faces": []}
+
+'''*******************************************************************************************************************************************************  '''
 
 
 def generate_lung_mesh(volume_hu: np.ndarray, threshold: float = -400.0, step_size: int = 4) -> dict[str, list]:
@@ -453,7 +458,7 @@ def generate_lung_mesh(volume_hu: np.ndarray, threshold: float = -400.0, step_si
         verts = verts - 1.0
         return {
             "vertices": verts.flatten().tolist(),
-            "faces": faces.flatten().tolist()
+            "faces": faces.flatten().tolist()   
         }
     except Exception as e:
         print(f"[WARN] Failed to generate full lung 3D mesh: {e}")
@@ -497,9 +502,11 @@ def root():
 
 
 @app.get("/health")
-def health():
+def health(request: Request):
+    """Use `api_url` from this response as VITE_API_URL when accessing from another machine."""
     return {
         "status": "healthy",
+        "api_url": str(request.base_url).rstrip("/"),
         "device": str(device),
         "classifier": CLASSIFIER_PATH.exists(),
         "yolo": YOLO_PATH.exists() and yolo_model is not None,
@@ -575,96 +582,7 @@ def classification_test_sample(filename: str | None = Query(None)):
     }
 
 
-@app.post("/api/evaluate/classification")
-def evaluate_classification(limit: int = Query(0, ge=0, le=500)):
-    """Evaluate classifier on all (or first `limit`) test .npz patches."""
-    files = sorted(CLASSIFICATION_TEST_DIR.glob("*.npz"))
-    if limit > 0:
-        files = files[:limit]
-
-    tp = fp = tn = fn = 0
-    for path in files:
-        data = np.load(path)
-        y_true = int(data["label"])
-        vol = volume_tensor_from_npz(data["volume"].astype(np.float32))
-        y_pred = predict_volume_tensor(vol)["malignancy"]["pred"]
-        if y_true == 1 and y_pred == 1:
-            tp += 1
-        elif y_true == 0 and y_pred == 1:
-            fp += 1
-        elif y_true == 0 and y_pred == 0:
-            tn += 1
-        else:
-            fn += 1
-
-    n = len(files) or 1
-    precision = tp / max(tp + fp, 1)
-    recall = tp / max(tp + fn, 1)
-    accuracy = (tp + tn) / n
-    f1 = 2 * precision * recall / max(precision + recall, 1e-6)
-
-    return {
-        "samples": len(files),
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "f1": f1,
-        "confusion": {"tp": tp, "fp": fp, "tn": tn, "fn": fn},
-    }
-
-
 # ── Detection test set ────────────────────────────────────────────────────────
-
-@app.post("/api/evaluate/detection")
-def evaluate_detection(limit: int = Query(100, ge=1, le=2000)):
-    """Subset evaluation on YOLO test images with label files."""
-    if yolo_model is None:
-        raise HTTPException(503, "YOLO model not loaded")
-
-    images = sorted(DETECTION_TEST_IMAGES.glob("*.png"))[:limit]
-    tp = fp = fn = 0
-    iou_thr = 0.5
-
-    for img_path in images:
-        img = cv2.imread(str(img_path))
-        if img is None:
-            continue
-        h, w = img.shape[:2]
-        gt_boxes = parse_yolo_label(DETECTION_TEST_LABELS / f"{img_path.stem}.txt", w, h)
-        preds = yolo_detect_rgb(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-        pred_boxes = [tuple(d["bbox_xyxy"]) for d in preds]
-
-        matched_gt = set()
-        for pb in pred_boxes:
-            best_iou, best_j = 0.0, -1
-            for j, gb in enumerate(gt_boxes):
-                if j in matched_gt:
-                    continue
-                iou = box_iou(pb, gb)
-                if iou > best_iou:
-                    best_iou, best_j = iou, j
-            if best_iou >= iou_thr and best_j >= 0:
-                tp += 1
-                matched_gt.add(best_j)
-            else:
-                fp += 1
-        fn += len(gt_boxes) - len(matched_gt)
-
-    precision = tp / max(tp + fp, 1)
-    recall = tp / max(tp + fn, 1)
-    f1 = 2 * precision * recall / max(precision + recall, 1e-6)
-
-    return {
-        "images_evaluated": len(images),
-        "iou_threshold": iou_thr,
-        "yolo_conf": YOLO_CONF,
-        "yolo_iou": YOLO_IOU,
-        "precision": precision,
-        "recall": recall,
-        "f1": f1,
-        "tp": tp, "fp": fp, "fn": fn,
-    }
-
 
 @app.get("/api/test/detection/sample")
 def detection_test_sample(filename: str | None = Query(None)):
@@ -1021,11 +939,6 @@ async def save_labeled(
     }
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
-
-
 @app.get("/api/mesh/dicom")
 def get_dicom_mesh(session_id: str = Query(...)):
     """
@@ -1061,3 +974,8 @@ def get_dicom_mesh(session_id: str = Query(...)):
         }
     except Exception as e:
         raise HTTPException(500, f"Failed to generate meshes: {e}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
