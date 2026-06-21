@@ -1,3 +1,0 @@
-timestamp,scan_id,model_version,num_nodules,nodule_index,yolo_confidence,mal_probability,mal_label,diameter_mm,volume_depth,volume_height,volume_width,user_saved
-2026-06-21T11:19:59.461793,af8fcdbc-7b23-42a8-a3e4-1f4c47b25487,yolov8m_v3.3 + r2plus1d_v3.3,2,0,0.8909,0.2913,Benign,5.31,55,512,512,False
-2026-06-21T11:19:59.461793,af8fcdbc-7b23-42a8-a3e4-1f4c47b25487,yolov8m_v3.3 + r2plus1d_v3.3,2,1,0.8495,0.3079,Benign,3.98,55,512,512,False
