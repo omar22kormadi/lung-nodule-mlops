@@ -32,12 +32,28 @@ import pandas as pd
 import pydicom
 import torch
 import torch.nn as nn
-from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from torchvision.models.video import r2plus1d_18
 from ultralytics import YOLO
 import skimage.measure
+
+# Azure Blob Storage (optional — only needed for local dev; in ACI the File Share handles it)
+try:
+    from azure.storage.blob import BlobServiceClient
+    _AZURE_BLOB_AVAILABLE = True
+except ImportError:
+    _AZURE_BLOB_AVAILABLE = False
+
+# Load .env file if present (for local development)
+# Searches from api.py upward to find the project root .env
+try:
+    from dotenv import load_dotenv
+    _ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"
+    load_dotenv(dotenv_path=_ENV_PATH)
+except ImportError:
+    pass
 
 # =============================================================================
 # Paths
@@ -831,7 +847,59 @@ def _log_prediction(
 
 
 # =============================================================================
-# Save labeled data endpoint
+# Azure Blob upload helper (used by /api/save/labeled on local dev)
+# =============================================================================
+
+def _upload_scan_to_azure(scan_id: str, scan_dir: Path) -> None:
+    """
+    Upload all files under scan_dir to Azure Blob Storage at labeled/<scan_id>/.
+
+    Only runs when:
+      - azure-storage-blob is installed
+      - AZURE_STORAGE_CONNECTION_STRING env var is set
+      - AZURE_LABELED_CONTAINER env var is set (defaults to "lung-data")
+
+    In production (ACI) the Azure File Share already persists /app/data, so
+    this function is primarily useful during local development.
+    Failures are logged but never propagate — the local save always succeeds.
+    """
+    if not _AZURE_BLOB_AVAILABLE:
+        return
+
+    conn_str = os.environ.get("AZURE_STORAGE_CONNECTION_STRING", "")
+    if not conn_str:
+        return  # env var not configured — skip silently
+
+    container = os.environ.get("AZURE_LABELED_CONTAINER", "lung-data")
+
+    try:
+        client = BlobServiceClient.from_connection_string(conn_str)
+        container_client = client.get_container_client(container)
+
+        uploaded = 0
+        for file_path in scan_dir.rglob("*"):
+            if not file_path.is_file():
+                continue
+            # Build blob path: labeled/<scan_id>/dicoms/filename.dcm  (or labels.txt)
+            relative = file_path.relative_to(scan_dir.parent)
+            blob_name = f"labeled/{relative.as_posix()}"
+            with open(file_path, "rb") as data:
+                container_client.upload_blob(name=blob_name, data=data, overwrite=True)
+            uploaded += 1
+
+        print(f"[Azure] Uploaded {uploaded} file(s) for scan_id={scan_id} → {container}/labeled/{scan_id}/")
+
+        # Delete local copy only after successful upload
+        shutil.rmtree(scan_dir, ignore_errors=True)
+        print(f"[Azure] Local folder deleted: {scan_dir}")
+
+    except Exception as exc:
+        # Never crash the API because of a blob upload failure — local copy stays safe
+        print(f"[Azure] WARNING: upload failed for scan_id={scan_id}: {exc} — local copy kept")
+
+
+# =============================================================================
+# Save labeled data endpoint  — LOCAL ONLY, returns immediately → green button
 # =============================================================================
 
 
@@ -842,21 +910,15 @@ async def save_labeled(
     dicom_files: list[UploadFile] = File(...),
 ):
     """
-    Called when the user confirms their nodule feedback in the frontend.
-
-    - Receives the original DICOM files again.
-    - Receives which nodule predictions the user verified as correct.
-    - Saves the raw DICOM files to data/labeled/<scan_id>/dicoms/
-    - Saves a YOLO-format labels.txt for each confirmed nodule.
-    - Appends a row to data/labeled/metadata.csv.
-    - Updates the predictions_log.csv user_saved flag.
+    Saves DICOMs + labels to local disk and returns immediately.
+    The frontend turns green as soon as this responds.
+    Azure sync is handled separately by /api/sync/azure/{scan_id}.
     """
     try:
         indices: list[int] = json.loads(confirmed_indices)
     except Exception:
         raise HTTPException(400, "confirmed_indices must be a valid JSON array, e.g. [0,1]")
 
-    # Load the session to get nodule results
     session_path = os.path.join(tempfile.gettempdir(), f"lung_session_{session_id}.pkl")
     if not os.path.exists(session_path):
         raise HTTPException(
@@ -872,18 +934,16 @@ async def save_labeled(
     volume_hu: np.ndarray = session["volume_hu"]
     d, h, w = volume_hu.shape
 
-    # Validate indices
     valid_indices = [i for i in indices if 0 <= i < len(nodule_results)]
     if not valid_indices:
         raise HTTPException(400, "No valid nodule indices provided.")
 
-    # Create scan folder under data/labeled/<scan_id>/
-    scan_id = session_id  # reuse session_id as unique scan folder name
+    scan_id = session_id
     scan_dir = LABELED_DIR / scan_id
     dicom_dir = scan_dir / "dicoms"
     dicom_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save raw DICOM files
+    # Save raw DICOM files locally
     for f in dicom_files:
         if not f.filename.lower().endswith(".dcm"):
             continue
@@ -891,8 +951,7 @@ async def save_labeled(
         content = await f.read()
         dest.write_bytes(content)
 
-    # Save YOLO-format labels.txt for each confirmed nodule
-    # Format per line: 0 cx_norm cy_norm w_norm h_norm
+    # Save YOLO-format labels.txt
     labels_lines = []
     for idx in valid_indices:
         nd = nodule_results[idx]
@@ -926,9 +985,10 @@ async def save_labeled(
             "notes": f"confirmed_indices={valid_indices}",
         })
 
-    # Update monitoring log: mark this scan as user_saved=True
+    # Update monitoring log
     _log_prediction(scan_id, [d, h, w], [nodule_results[i] for i in valid_indices], user_saved=True)
 
+    # ✅ Return immediately — frontend turns green NOW
     return {
         "success": True,
         "scan_id": scan_id,
@@ -938,6 +998,33 @@ async def save_labeled(
         "labels_file": str(labels_path),
     }
 
+
+# =============================================================================
+# Azure sync endpoint  — fire-and-forget from frontend after local save
+# =============================================================================
+
+
+@app.post("/api/sync/azure/{scan_id}")
+async def sync_azure(scan_id: str, background_tasks: BackgroundTasks):
+    """
+    Uploads an already-saved local scan to Azure Blob Storage.
+    Called by the frontend immediately after /api/save/labeled succeeds,
+    but the frontend does NOT await the result — so the user never waits.
+    Returns instantly with {"queued": true}.
+    """
+    # Guard against accidental calls with no real scan_id
+    if not scan_id or scan_id == "null" or scan_id == "undefined":
+        return {"queued": False, "reason": "no_scan_id"}
+
+    scan_dir = LABELED_DIR / scan_id
+    if not scan_dir.exists():
+        raise HTTPException(404, f"Scan not found locally: {scan_id}")
+
+    if not _AZURE_BLOB_AVAILABLE or not os.environ.get("AZURE_STORAGE_CONNECTION_STRING"):
+        return {"queued": False, "reason": "Azure not configured"}
+
+    background_tasks.add_task(_upload_scan_to_azure, scan_id, scan_dir)
+    return {"queued": True, "scan_id": scan_id}
 
 @app.get("/api/mesh/dicom")
 def get_dicom_mesh(session_id: str = Query(...)):

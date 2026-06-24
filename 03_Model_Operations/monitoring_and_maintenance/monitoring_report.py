@@ -112,11 +112,60 @@ def generate_report() -> str:
         icon = "⚠️ " if status == "DRIFT_DETECTED" else "✅ "
         lines.append(f"  Overall Status : {icon} {status}")
         lines.append(f"  Rows analysed  : {drift.get('total_rows_analysed', 0)}")
-        for check_name, result in drift.get("checks", {}).items():
+
+        # ── KS / rate checks ──
+        ks_keys = ["yolo_confidence", "mal_probability", "diameter_mm", "malignant_rate"]
+        for check_name in ks_keys:
+            result = drift.get("checks", {}).get(check_name, {})
             flag = "⚠️ DRIFT" if result.get("is_drifted") else "  OK   "
-            rec  = result.get("recent_mean", result.get("recent_rate", "N/A"))
+            rec  = result.get("recent_mean", result.get("recent_rate", result.get("reason", "N/A")))
             base = result.get("baseline_mean", result.get("baseline_rate", "N/A"))
             lines.append(f"  [{flag}] {check_name:<22} recent={rec}  baseline={base}")
+
+        # ── HU intensity drift ──
+        lines.append("")
+        lines.append("  📡  DATA DRIFT — HU Intensity")
+        hu = drift.get("checks", {}).get("hu_intensity", {})
+        if hu.get("reason"):
+            lines.append(f"  [  N/A  ] hu_intensity           {hu['reason']} (need ≥{hu.get('min_required', 5)} scans, have {hu.get('n_scans', 0)})")
+        else:
+            flag = "⚠️ DRIFT" if hu.get("is_drifted") else "  OK   "
+            lines.append(
+                f"  [{flag}] hu_intensity           "
+                f"recent={hu.get('recent_mean_hu')} HU  "
+                f"baseline={hu.get('baseline_mean_hu')} HU  "
+                f"({hu.get('deviation_sigma')}σ, threshold {hu.get('threshold_sigma')}σ)  "
+                f"n={hu.get('n_scans')} scans"
+            )
+
+        # ── Performance drift ──
+        lines.append("")
+        lines.append("  📈  PERFORMANCE DRIFT")
+        det = drift.get("checks", {}).get("detection_map50", {})
+        if det.get("reason"):
+            lines.append(f"  [  N/A  ] detection_map50        {det['reason']} (need ≥{det.get('min_required', 10)} scans, have {det.get('n_scans', 0)})")
+        else:
+            flag = "⚠️ DRIFT" if det.get("is_drifted") else "  OK   "
+            lines.append(
+                f"  [{flag}] detection_map50        "
+                f"mAP@50={det.get('map50')}  "
+                f"sensitivity={det.get('sensitivity')}  "
+                f"threshold={det.get('threshold_map50')}  "
+                f"n={det.get('n_scans')} scans"
+            )
+
+        cls = drift.get("checks", {}).get("classification_auc", {})
+        if cls.get("reason"):
+            lines.append(f"  [  N/A  ] classification_auc     {cls['reason']} (need ≥{cls.get('min_required', 10)} samples, have {cls.get('n_samples', 0)})")
+        else:
+            flag = "⚠️ DRIFT" if cls.get("is_drifted") else "  OK   "
+            lines.append(
+                f"  [{flag}] classification_auc     "
+                f"ROC-AUC={cls.get('roc_auc')}  "
+                f"threshold={cls.get('threshold_auc')}  "
+                f"n={cls.get('n_samples')} samples"
+            )
+
     except Exception as e:
         lines.append(f"  Drift check failed: {e}")
 

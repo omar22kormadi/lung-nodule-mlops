@@ -182,6 +182,10 @@ function Index() {
       await axios.post(`${API_URL}/api/save/labeled`, fd);
       setSaved(true);
       setSaveMsg("✅ Scan saved successfully! Thank you for helping improve the model.");
+      // Fire-and-forget Azure sync — runs in background, user never waits for it
+      if (sessionId) {
+        axios.post(`${API_URL}/api/sync/azure/${sessionId}`).catch(() => {});
+      }
     } catch (err: any) {
       setSaveMsg(err.response?.data?.detail || err.message || "Failed to save scan");
     } finally {

@@ -22,11 +22,13 @@ from drift_detection import detect_drift
 # Config — adjust thresholds here
 # ---------------------------------------------------------------------------
 ALERT_RULES = {
-    # Flag if KS p-value < 0.05 (configured inside drift_detection.py)
-    "yolo_confidence":  {"enabled": True},
-    "mal_probability":  {"enabled": True},
-    "diameter_mm":      {"enabled": True},
-    "malignant_rate":   {"enabled": True, "max_delta": 0.15},
+    "yolo_confidence":    {"enabled": True},
+    "mal_probability":    {"enabled": True},
+    "diameter_mm":        {"enabled": True},
+    "malignant_rate":     {"enabled": True},
+    "hu_intensity":       {"enabled": True},
+    "detection_map50":    {"enabled": True},
+    "classification_auc": {"enabled": True},
 }
 
 _THIS_DIR = Path(__file__).resolve().parent
@@ -38,18 +40,47 @@ ALERT_LOG_PATH = PROJECT_ROOT / "data" / "monitoring" / "alerts.log"
 # Alert sender — extend this with email / Slack / Teams
 # ---------------------------------------------------------------------------
 def send_alert(message: str) -> None:
-    """
-    Sends an alert. Currently prints to stdout and appends to alerts.log.
-    To add email/Slack: add your notification logic here.
-    """
     timestamp = datetime.datetime.utcnow().isoformat()
     full_msg = f"[{timestamp}] ALERT: {message}"
-
     print(f"\n🚨  {full_msg}")
-
     ALERT_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(ALERT_LOG_PATH, "a", encoding="utf-8") as f:
         f.write(full_msg + "\n")
+
+
+# ---------------------------------------------------------------------------
+# Build a human-readable alert message for each check type
+# ---------------------------------------------------------------------------
+def _build_message(metric: str, result: dict) -> str:
+    if metric == "hu_intensity":
+        return (
+            f"Data drift in [hu_intensity] — "
+            f"recent_mean={result.get('recent_mean_hu')} HU, "
+            f"baseline={result.get('baseline_mean_hu')} HU, "
+            f"deviation={result.get('deviation_sigma')}σ "
+            f"(threshold {result.get('threshold_sigma')}σ)"
+        )
+    if metric == "detection_map50":
+        return (
+            f"Performance drift in [detection_map50] — "
+            f"mAP@50={result.get('map50')}, "
+            f"sensitivity={result.get('sensitivity')}, "
+            f"threshold={result.get('threshold_map50')}"
+        )
+    if metric == "classification_auc":
+        return (
+            f"Performance drift in [classification_auc] — "
+            f"ROC-AUC={result.get('roc_auc')}, "
+            f"threshold={result.get('threshold_auc')}"
+        )
+    # Generic for KS-test checks
+    rec  = result.get("recent_mean", result.get("recent_rate", "N/A"))
+    base = result.get("baseline_mean", result.get("baseline_rate", "N/A"))
+    p    = result.get("p_value", "N/A")
+    return (
+        f"Drift in [{metric}] — "
+        f"recent={rec}, baseline={base}, p-value={p}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -68,16 +99,9 @@ def run_alerts() -> None:
         rule = ALERT_RULES.get(metric, {})
         if not rule.get("enabled", True):
             continue
-
         if result.get("is_drifted", False):
             triggered = True
-            rec  = result.get("recent_mean", result.get("recent_rate", "N/A"))
-            base = result.get("baseline_mean", result.get("baseline_rate", "N/A"))
-            p    = result.get("p_value", "N/A")
-            send_alert(
-                f"Drift in [{metric}] — "
-                f"recent={rec}, baseline={base}, p-value={p}"
-            )
+            send_alert(_build_message(metric, result))
 
     if not triggered:
         print("[Alerts] ✅  All checks passed. No alerts.")
