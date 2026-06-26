@@ -440,7 +440,7 @@ def box_iou(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> float
     area_b = (bx2 - bx1) * (by2 - by1)
     return inter / max(area_a + area_b - inter, 1e-6)
 
-'''*******************************************************************************************************************************************************  '''
+'''********************************************************************************************************************************************************  '''
 def generate_nodule_mesh(patch_normalized: np.ndarray, threshold: float = 0.4) -> dict[str, list]:
     """Generate a lightweight 3D mesh from the 64x64x64 nodule patch for frontend rendering."""
     try:
