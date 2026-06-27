@@ -96,6 +96,7 @@ function Index() {
   const [dicomResult, setDicomResult] = useState<ApiResult | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [meshLoading, setMeshLoading] = useState(false);
   const [meshError, setMeshError] = useState<string | null>(null);
   const [meshData, setMeshData] = useState<{ lung_mesh?: any; nodules?: any[] } | null>(null);
@@ -155,7 +156,16 @@ function Index() {
       setSaved(false);
       setSaveMsg(null);
       setDicomFiles(files);
-      const { data } = await axios.post(`${API_URL}/api/predict/dicom`, fd);
+      setUploadProgress(0);
+      const { data } = await axios.post(`${API_URL}/api/predict/dicom`, fd, {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          }
+        }
+      });
+      setUploadProgress(null);
       setDicomResult(data);
       setSessionId(data?.session_id ?? null);
       if (data?.session_id) {
@@ -299,7 +309,11 @@ function Index() {
                 disabled={loading || files.length < 10}
                 onClick={runInference}
               >
-                {loading ? "Running inference…" : "Run inference"}
+                {loading 
+                  ? (uploadProgress !== null && uploadProgress < 100 
+                      ? `Uploading ${uploadProgress}%...` 
+                      : "Running inference…")
+                  : "Run inference"}
               </button>
             </div>
           </div>
